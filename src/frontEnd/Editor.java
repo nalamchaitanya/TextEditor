@@ -38,6 +38,7 @@ public class Editor
 		//Initialization of main Frame.
 		mainFrame = new JFrame("TextEditor");
 		mainFrame.setMinimumSize(new Dimension(1200,600));
+		mainFrame.setResizable(true);
 		mainFrame.setLayout(null);
 	    
 	    tabbedPane = new JTabbedPane();

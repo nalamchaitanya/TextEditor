@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Stack;
 
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
@@ -27,17 +28,22 @@ public class FileTab
 	JPanel panelTab;
 	File tabFile;
 	String name;
-	private ArrayList<FileTab> fileTabsList;
+	public ArrayList<FileTab> fileTabsList;
+	Stack<String> undoStack;
+	Stack<String> redoStack;
 	
 	public FileTab(File file,JTabbedPane tabbedPane,ArrayList<FileTab> fileTabsList)
 	{
 		tabFile = file;
+		undoStack = new Stack<String>();
+		redoStack = new Stack<String>();
 		this.fileTabsList = fileTabsList;
 		editorPane = new JEditorPane();
 		scrollPane = new JScrollPane(editorPane);
 		this.tabbedPane = tabbedPane;
 		name = file.getPath();
 		this.openFile(file);
+		editorPane.setCaretPosition(0);
 		this.setTab();
 	}
 
@@ -49,6 +55,7 @@ public class FileTab
 		this.tabbedPane = tabbedPane;
 		editorPane = new JEditorPane();
 		scrollPane = new JScrollPane(editorPane);
+		editorPane.setCaretPosition(0);
 		this.setTab();		
 	}
 	
@@ -116,6 +123,6 @@ public class FileTab
 		gbc.ipady = 0;
 		gbc.weightx = 0;
 		panelTab.add(close,gbc);		
-	}	
-	
+	}
+
 }
