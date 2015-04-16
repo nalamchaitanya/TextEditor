@@ -2,16 +2,19 @@ package frontEnd;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -19,13 +22,17 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JToolBar;
+import javax.swing.JViewport;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
 public class Editor
 {
 	public JFrame mainFrame;
+	public JToolBar editBar;
 	public JMenuBar menuBar;
 	public JTabbedPane tabbedPane;
 	private int k = 1;
@@ -55,12 +62,59 @@ public class Editor
 		
 		tabbedPane.setBounds(10, 60, 1160, 500);
 	    mainFrame.add(tabbedPane);
+	   
+	    //creating a panel for cut, copy, paste
+	    editBar= new JToolBar();
+		editBar.setBounds(0, 25, 1200, 30);
+	    //add edit bar to frame
+		mainFrame.add(editBar);
+	    //add buttons to the ToolBar
+	    CreateEditBar();
 	    
 	    mainFrame.pack();
 	    mainFrame.setVisible(true);
 	    
 	}
+	/********************************************************************************************************/
+	public void CreateEditBar(){
+		//writing cut, cpoy, paste for now
+		
+		JButton cut=makeButton("Cut.png", "cut selected text", "Cut");
+		//cut.setPreferredSize(new Dimension(25, 25));
+		JButton copy= makeButton("Copy.png", "copy selected text", "Copy");
+		//copy.setPreferredSize(new Dimension(25, 25));
+		JButton paste= makeButton("Paste.png", "paste selected text",  "Paste");
+		//paste.setPreferredSize(new Dimension(25, 25));
+		
+		//adding the buttons
+		editBar.add(cut);
+		editBar.add(copy);
+		editBar.add(paste);
+	}
+	//make the button
+	public JButton makeButton(String imagePath, String toolTipText, String action){
+		
+		//create new JButton
+		JButton button= new JButton();
+		//set the tool tip text
+		button.setToolTipText(toolTipText);
+		//set the Icon
+		try{
+			Image img= ImageIO.read(new FileInputStream(imagePath));
+			img= img.getScaledInstance(25, 25, java.awt.Image.SCALE_SMOOTH);
+			button.setIcon(new ImageIcon(img));			
+		}
+		catch(IOException e){
+			;
+		}
 
+		//set Action Listener
+		button.addActionListener(new EditBarActionListener(action, tabbedPane));
+		
+		return button;
+	}
+	
+	
 	/********************************************************************************************************/
 	private void createMenu()
 	{
@@ -104,7 +158,7 @@ public class Editor
 			}			
 		});
 
-		
+		menu.addSeparator();
 		/*********************************************************/
 		//save a tab
 		menuItem = menu.add("Save");
@@ -186,6 +240,8 @@ public class Editor
 				}
 			}			
 		});
+		
+		menu.addSeparator();
 		/*********************************************************/
 		//esit from the Editor
 		menuItem = menu.add("Quit");
@@ -207,19 +263,6 @@ public class Editor
 		//Adding MenuItems to the Edit Menu
 		/*********************************************************/
 		//Copy
-		menuItem = menu.add("Copy");
-		menuItem.addActionListener(new ActionListener()
-		{
-
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				//TODO the copy
-			}
-			
-		});
-		/*********************************************************/
-		//Cut
 		menuItem = menu.add("Cut");
 		menuItem.addActionListener(new ActionListener()
 		{
@@ -227,7 +270,44 @@ public class Editor
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				//TODO the cut
+				//to the action on the highlighted text
+				JScrollPane curr= (JScrollPane)tabbedPane.getSelectedComponent();
+				if(curr != null){
+					JViewport view= (JViewport)curr.getViewport();
+					JEditorPane editor= (JEditorPane)view.getComponent(0);
+					//cut the selected text
+					try{
+						editor.cut();
+					}
+					catch(NullPointerException exp){
+						;
+					}
+				}
+			}
+			
+		});
+		/*********************************************************/
+		//Cut
+		menuItem = menu.add("Copy");
+		menuItem.addActionListener(new ActionListener()
+		{
+
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				//to the action on the highlighted text
+				JScrollPane curr= (JScrollPane)tabbedPane.getSelectedComponent();
+				if(curr != null){
+					JViewport view= (JViewport)curr.getViewport();
+					JEditorPane editor= (JEditorPane)view.getComponent(0);
+					//cut the selected text
+					try{
+						editor.copy();
+					}
+					catch(NullPointerException exp){
+						;
+					}
+				}
 			}
 			
 		});
@@ -240,10 +320,24 @@ public class Editor
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				//TODO the paste
+				//to the action on the highlighted text
+				JScrollPane curr= (JScrollPane)tabbedPane.getSelectedComponent();
+				if(curr != null){
+					JViewport view= (JViewport)curr.getViewport();
+					JEditorPane editor= (JEditorPane)view.getComponent(0);
+					//cut the selected text
+					try{
+						editor.paste();
+					}
+					catch(NullPointerException exp){
+						;
+					}
+				}
 			}
 			
 		});
+		
+		menu.addSeparator();
 		/*********************************************************/
 		//Undo
 		menuItem = menu.add("Undo");
@@ -270,6 +364,8 @@ public class Editor
 			}
 			
 		});
+		
+		menu.addSeparator();
 		/*********************************************************/
 		//Find
 		//Everytime you press find, have to check if find is already open in the tab, else open it
@@ -289,7 +385,8 @@ public class Editor
 					//create a new Pop up asking for text to be found
 					String str= JOptionPane.showInputDialog(currTab.scrollPane, "Enter the String");
 					//use the String in the Find function
-					Find(currTab, str);
+					if(str != null)
+						Find(currTab, str);
 					//if user presses enter, find becomes false and highlights are removed
 				}
 			}
@@ -369,7 +466,7 @@ public class Editor
 				if(str.equals(temp)){
 					//highlight
 					javax.swing.text.DefaultHighlighter.DefaultHighlightPainter highlightPainter =
-                            new javax.swing.text.DefaultHighlighter.DefaultHighlightPainter(new Color(255, 0, 0));
+                            new javax.swing.text.DefaultHighlighter.DefaultHighlightPainter(new Color(255, 255, 0));
 					currTab.editorPane.getHighlighter().addHighlight(i, i+len, highlightPainter);
 				}
 				

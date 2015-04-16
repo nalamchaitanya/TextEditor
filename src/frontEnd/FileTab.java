@@ -7,19 +7,25 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.KeyStroke;
+import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
+import javax.swing.text.Highlighter;
 
 public class FileTab
 {
@@ -33,6 +39,7 @@ public class FileTab
 	boolean closed;
 	//public ArrayList<FileTab> fileTabsList;
 	
+	/********************************************************************************************************/
 	public FileTab(File file,JTabbedPane tabbedPane,ArrayList<FileTab> fileTabsList)
 	{
 		tabFile = file;
@@ -46,8 +53,12 @@ public class FileTab
 		find= false;
 		this.openFile(file);
 		this.setTab();
+		
+		//addKeyBindings function
+		AddKeyBindings();
 	}
 
+	/********************************************************************************************************/
 	public FileTab(String str,JTabbedPane tabbedPane,ArrayList<FileTab> fileTabsList)
 	{
 		tabFile = null;
@@ -60,8 +71,12 @@ public class FileTab
 		//set find as false
 		find= false;
 		this.setTab();		
+		
+		//add keyBinding function
+		AddKeyBindings();
 	}
 	
+	/********************************************************************************************************/
 	private void openFile(File file)
 	{
 		String currStr="", readStr;
@@ -91,6 +106,7 @@ public class FileTab
 		
 	}
 
+	/********************************************************************************************************/
 	public void setTab()
 	{
 		panelTab = new JPanel(new GridBagLayout());
@@ -127,5 +143,44 @@ public class FileTab
 		gbc.ipady = 0;
 		gbc.weightx = 0;
 		panelTab.add(close,gbc);		
-	}		
+	}	
+	
+	/********************************************************************************************************/
+	/********************************************************************************************************/
+	//All keybinding functions are to be added from here
+	//Function to add KeyBindings
+	public void AddKeyBindings(){
+		//add an InputMap and ActionMap on the JEditorPane
+		InputMap iMap= editorPane.getInputMap(JComponent.WHEN_FOCUSED);
+		ActionMap aMap= editorPane.getActionMap();
+		
+		String escape= "escape";
+		iMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), escape);
+		aMap.put(escape, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				//remove the highlighting in the text
+				if(find == true){
+					RemoveHighlighting();
+					find= false;
+				}
+			}
+		});
+	}
+	
+	/********************************************************************************************************/
+	//Function to remove Highlighting
+	public void RemoveHighlighting(){
+		
+		Highlighter hl= editorPane.getHighlighter();
+		//fetching the current list of Highlights
+		Highlighter.Highlight[] hls= hl.getHighlights();
+		
+		for(int i=0; i<hls.length; i++){
+			if(hls[i].getPainter() instanceof DefaultHighlightPainter ){
+				hl.removeHighlight(hls[i]);
+			}
+		}
+	}
 }
