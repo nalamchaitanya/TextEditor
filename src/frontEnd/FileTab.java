@@ -6,6 +6,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -27,16 +29,21 @@ public class FileTab
 	JPanel panelTab;
 	File tabFile;
 	String name;
-	private ArrayList<FileTab> fileTabsList;
+	boolean find;
+	boolean closed;
+	//public ArrayList<FileTab> fileTabsList;
 	
 	public FileTab(File file,JTabbedPane tabbedPane,ArrayList<FileTab> fileTabsList)
 	{
 		tabFile = file;
-		this.fileTabsList = fileTabsList;
+		//this.fileTabsList = fileTabsList;
+		closed= false;
 		editorPane = new JEditorPane();
 		scrollPane = new JScrollPane(editorPane);
 		this.tabbedPane = tabbedPane;
 		name = file.getPath();
+		//put find as false
+		find= false;
 		this.openFile(file);
 		this.setTab();
 	}
@@ -45,10 +52,13 @@ public class FileTab
 	{
 		tabFile = null;
 		name = str;
-		this.fileTabsList = fileTabsList;
+		//this.fileTabsList = fileTabsList;
+		closed= false;
 		this.tabbedPane = tabbedPane;
 		editorPane = new JEditorPane();
 		scrollPane = new JScrollPane(editorPane);
+		//set find as false
+		find= false;
 		this.setTab();		
 	}
 	
@@ -100,7 +110,8 @@ public class FileTab
 				Component selected = tabbedPane.getSelectedComponent();
 				if(selected!=null)
 				{
-					fileTabsList.remove(this);
+					//fileTabsList.remove(this);
+					closed= true;
 					tabbedPane.remove(selected);
 				}
 			}			
@@ -116,6 +127,5 @@ public class FileTab
 		gbc.ipady = 0;
 		gbc.weightx = 0;
 		panelTab.add(close,gbc);		
-	}	
-	
+	}		
 }
