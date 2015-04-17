@@ -79,7 +79,25 @@ public class CommonEditBarActionListener implements ActionListener{
 				}
 			}
 		}
-		
+		else if(action.equals("Undo")){
+			//run undo code 
+			int t = tabbedPane.getSelectedIndex();
+			if (t!= -1) {
+				CleanList();
+				FileTab currTab = fileTabsList.get(t);
+				currTab.undoListener.undoAction.actionPerformed(e);
+			}
+		}
+		else if(action.equals("Redo")){
+			//run Redo code
+			int t = tabbedPane.getSelectedIndex();
+			if (t != -1) {
+				CleanList();
+				FileTab currTab = fileTabsList.get(t);
+				currTab.undoListener.redoAction.actionPerformed(e);
+			}
+		}
+			
 	}
 	
 

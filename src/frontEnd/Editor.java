@@ -1,7 +1,6 @@
 package frontEnd;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -123,6 +122,12 @@ public class Editor {
 		}
 		else if(action.equals("FindAndReplace")){
 			button.addActionListener(new CommonEditBarActionListener(tabbedPane, fileTabsList, "FindAndReplace"));
+		}
+		else if(action.equals("Undo")){
+			button.addActionListener(new CommonEditBarActionListener(tabbedPane, fileTabsList, "Undo"));
+		}
+		else if(action.equals("Redo")){
+			button.addActionListener(new CommonEditBarActionListener(tabbedPane, fileTabsList, "Redo"));
 		}
 		else{
 			//set Action Listener
@@ -273,7 +278,7 @@ public class Editor {
 		menuItem = menu.add("Cut");
 		menuItem.addActionListener(new ActionListener()
 		{
-
+			int t = tabbedPane.getSelectedIndex();
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
@@ -350,37 +355,13 @@ public class Editor {
 		// Undo
 		menuItem = menu.add("Undo");
 		// TODO for now exception of t = -1 is not handled.
-		menuItem.addActionListener(new ActionListener() {
-			int t = tabbedPane.getSelectedIndex();
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.out.println(t);
-				if (t == -1) {
-					CleanList();
-					FileTab currTab = fileTabsList.get(0);
-					//currTab.undoListener.undoAction.actionPerformed(e);
-				}
-			}
-		});
+		menuItem.addActionListener(new CommonEditBarActionListener(tabbedPane, fileTabsList, "Undo"));
 
 		/*********************************************************/
 		// Redo
 		menuItem = menu.add("Redo");
 		// TODO for now exception of t = -1 is not handled.
-		menuItem.addActionListener(new ActionListener() {
-			int t = tabbedPane.getSelectedIndex();
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (t == -1) {
-					System.out.println("i am here");
-					CleanList();
-					FileTab currTab = fileTabsList.get(0);
-					//currTab.undoListener.redoAction.actionPerformed(e);
-				}
-			}
-		});
+		menuItem.addActionListener(new CommonEditBarActionListener(tabbedPane, fileTabsList, "Redo"));
 		
 		menu.addSeparator();
 		/*********************************************************/
@@ -442,6 +423,7 @@ public class Editor {
 			}
 			str = "Untitled " + k;
 			k++;
+
 			//creating a new Tab
 			FileTab fileTab = new FileTab(str,tabbedPane);
 			fileTabsList.add(fileTab);
