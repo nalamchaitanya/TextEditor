@@ -83,7 +83,7 @@ public class HoverButton extends JButton
         }
       }).start();
     }
-
+    
     public void mousePressed(MouseEvent me)
     {
       new Thread(new Runnable()
