@@ -47,7 +47,7 @@ public class FileTab
 	boolean closed;
 	AbstractDocument document;
 	
-	public CustomUndoListener undoListener;
+	//public CustomUndoListener undoListener;
 	
 	// public ArrayList<FileTab> fileTabsList;
 
@@ -55,7 +55,7 @@ public class FileTab
 	public FileTab(File file,JTabbedPane tabbedPane)
 	{
 		tabFile = file;
-		undoListener = new CustomUndoListener();
+		//undoListener = new CustomUndoListener();
 		// this.fileTabsList = fileTabsList;
 		closed = false;
 		editorPane = new JEditorPane();
@@ -66,7 +66,7 @@ public class FileTab
 		find = false;
 		this.openFile(file);
 		document = (AbstractDocument) editorPane.getDocument();
-		document.addUndoableEditListener(undoListener);
+		//document.addUndoableEditListener(undoListener);
 		document.addDocumentListener(new customDocumentListener());
 		this.setTab();
 		
@@ -78,7 +78,7 @@ public class FileTab
 	public FileTab(String str,JTabbedPane tabbedPane)
 	{
 		tabFile = null;
-		undoListener = new CustomUndoListener();
+		//undoListener = new CustomUndoListener();
 		name = str;
 		// this.fileTabsList = fileTabsList;
 		closed = false;
@@ -88,7 +88,7 @@ public class FileTab
 		// set find as false
 		find = false;
 		document = (AbstractDocument) editorPane.getDocument();
-		document.addUndoableEditListener(undoListener);
+		//document.addUndoableEditListener(undoListener);
 		document.addDocumentListener(new customDocumentListener());
 		this.setTab();
 		

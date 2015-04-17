@@ -359,7 +359,7 @@ public class Editor {
 				if (t == -1) {
 					CleanList();
 					FileTab currTab = fileTabsList.get(0);
-					currTab.undoListener.undoAction.actionPerformed(e);
+					//currTab.undoListener.undoAction.actionPerformed(e);
 				}
 			}
 		});
@@ -377,7 +377,7 @@ public class Editor {
 					System.out.println("i am here");
 					CleanList();
 					FileTab currTab = fileTabsList.get(0);
-					currTab.undoListener.redoAction.actionPerformed(e);
+					//currTab.undoListener.redoAction.actionPerformed(e);
 				}
 			}
 		});
