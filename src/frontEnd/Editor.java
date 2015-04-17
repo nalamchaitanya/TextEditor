@@ -24,6 +24,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.JViewport;
 import javax.swing.text.BadLocationException;
@@ -86,10 +87,21 @@ public class Editor
 		JButton paste= makeButton("Paste.png", "paste selected text",  "Paste");
 		//paste.setPreferredSize(new Dimension(25, 25));
 		
+		//adding Undo, Redo, Find, Find&Replace Buttons
+		JButton undo=makeButton("Undo.png", "Undo Previous Action", "Undo");
+		JButton redo=makeButton("Redo.png", "Redo Action", "Redo");
+		JButton find=makeButton("Find.png", "Find A String", "Find");
+		JButton findAndReplace=makeButton("FindAndReplace.png", "Find and Replace", "FindAndReplace");
+		
 		//adding the buttons
 		editBar.add(cut);
 		editBar.add(copy);
 		editBar.add(paste);
+		editBar.add(undo);
+		editBar.add(redo);
+		editBar.add(find);
+		editBar.add(findAndReplace);
+		
 	}
 	//make the button
 	public JButton makeButton(String imagePath, String toolTipText, String action){
@@ -369,6 +381,7 @@ public class Editor
 		/*********************************************************/
 		//Find
 		//Everytime you press find, have to check if find is already open in the tab, else open it
+		//The find function is useless and very weak. Modify.
 		menuItem = menu.add("Find");
 		menuItem.addActionListener(new ActionListener() {
 			@Override
@@ -385,9 +398,49 @@ public class Editor
 					//create a new Pop up asking for text to be found
 					String str= JOptionPane.showInputDialog(currTab.scrollPane, "Enter the String");
 					//use the String in the Find function
-					if(str != null)
-						Find(currTab, str);
+					if(str != null){
+						FindAndReplace(currTab, str, null);
 					//if user presses enter, find becomes false and highlights are removed
+					}
+				}
+			}
+		});
+		
+		/*********************************************************/
+		//find and replace
+		//Pressing this button will open a Dialog box, where the string will be found and highlighted
+		//Pressing replace will replace the string in order
+		//pressing escape, will as usual close the dialog box and remove the highlights
+		menuItem= menu.add("Find&Replace");
+		menuItem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				//get the curren tab
+				int t= tabbedPane.getSelectedIndex();
+				if(t!= -1){
+					//clean the fileTabsList
+					CleanList();
+					
+					FileTab currTab= fileTabsList.get(t);
+					currTab.find= true;
+					//the find variable indicates if highlights have to be cleaned
+					
+					//create a pop-up asking for text to be found
+					JTextField[] fr= new JTextField[2];
+					//first text field
+					fr[0]= new JTextField();
+					fr[0].setToolTipText("Enter Text To Be Found");
+					//next text field
+					fr[1]= new JTextField();
+					fr[1].setToolTipText("Enter Text To Replace With");
+					
+					JOptionPane.showMessageDialog(currTab.scrollPane, fr, "Enter The Strings", JOptionPane.PLAIN_MESSAGE);
+
+					//send strings to FindAndReplace Function
+					if(fr[0].getText() != null){
+						FindAndReplace(currTab, fr[0].getText(), fr[1].getText());
+					}
 				}
 			}
 		});
@@ -452,22 +505,33 @@ public class Editor
 	}
 
 	/********************************************************************************************************/
-	//Code for Find and Replace
-	public void Find(FileTab currTab, String str){
+	//Code for Find and replace
+	public void FindAndReplace(FileTab currTab, String str1, String str2){
 		Document doc= currTab.editorPane.getDocument();
 		
-		int len= str.length();
+		int len= str1.length();
 		
 		for(int i=0; i + len <= doc.getLength() ; i++){
 			//for every index i, compare the string and Highlight
 			try {
 				String temp= doc.getText(i, len);
 				//compare temp with str
-				if(str.equals(temp)){
+				if(str1.equals(temp)){
+					//replace the String with str2
+					if(str2 != null){
+							//add str2
+							doc.insertString(i, str2, null);
+							//remove str1
+							doc.remove(i+str2.length(), len);
+					}
 					//highlight
 					javax.swing.text.DefaultHighlighter.DefaultHighlightPainter highlightPainter =
                             new javax.swing.text.DefaultHighlighter.DefaultHighlightPainter(new Color(255, 255, 0));
-					currTab.editorPane.getHighlighter().addHighlight(i, i+len, highlightPainter);
+					if(str2 != null)
+						currTab.editorPane.getHighlighter().addHighlight(i, i+str2.length(), highlightPainter);
+					else
+						currTab.editorPane.getHighlighter().addHighlight(i, i+len, highlightPainter);
+						
 				}
 				
 			} 
@@ -477,6 +541,7 @@ public class Editor
 			}
 		}
 	}
+	
 	
 	/********************************************************************************************************/
 	//cleaning the filetab
