@@ -19,15 +19,23 @@ import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.text.AbstractDocument;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
 import javax.swing.KeyStroke;
 import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 import javax.swing.text.Highlighter;
 
-public class FileTab
+public class FileTab 
 {
 	JEditorPane editorPane;
 	JScrollPane scrollPane;
@@ -37,21 +45,29 @@ public class FileTab
 	String name;
 	boolean find;
 	boolean closed;
-	//public ArrayList<FileTab> fileTabsList;
+	AbstractDocument document;
 	
+	public CustomUndoListener undoListener;
+	
+	// public ArrayList<FileTab> fileTabsList;
+
 	/********************************************************************************************************/
 	public FileTab(File file,JTabbedPane tabbedPane)
 	{
 		tabFile = file;
-		//this.fileTabsList = fileTabsList;
-		closed= false;
+		undoListener = new CustomUndoListener();
+		// this.fileTabsList = fileTabsList;
+		closed = false;
 		editorPane = new JEditorPane();
 		scrollPane = new JScrollPane(editorPane);
 		this.tabbedPane = tabbedPane;
 		name = file.getPath();
-		//put find as false
-		find= false;
+		// put find as false
+		find = false;
 		this.openFile(file);
+		document = (AbstractDocument) editorPane.getDocument();
+		document.addUndoableEditListener(undoListener);
+		document.addDocumentListener(new customDocumentListener());
 		this.setTab();
 		
 		//addKeyBindings function
@@ -62,19 +78,26 @@ public class FileTab
 	public FileTab(String str,JTabbedPane tabbedPane)
 	{
 		tabFile = null;
+		undoListener = new CustomUndoListener();
 		name = str;
-		//this.fileTabsList = fileTabsList;
-		closed= false;
+		// this.fileTabsList = fileTabsList;
+		closed = false;
 		this.tabbedPane = tabbedPane;
 		editorPane = new JEditorPane();
 		scrollPane = new JScrollPane(editorPane);
-		//set find as false
-		find= false;
-		this.setTab();		
+		// set find as false
+		find = false;
+		document = (AbstractDocument) editorPane.getDocument();
+		document.addUndoableEditListener(undoListener);
+		document.addDocumentListener(new customDocumentListener());
+		this.setTab();
 		
 		//add keyBinding function
 		AddKeyBindings();
 	}
+
+
+	
 	
 	/********************************************************************************************************/
 	private void openFile(File file)
@@ -91,58 +114,79 @@ public class FileTab
 				currStr= currStr+ readStr+"\n";
 				readStr= in.readLine();
 			}
-			
-			//add currStr to the current Pane
+
+			// add currStr to the current Pane
 			editorPane.setText(currStr);
-			
-			//close the file
+
+			// close the file
 			in.close();
-		}
-		catch(IOException e)
-		{
-			//Dialog box saying that such a file does not exist
+		} catch (IOException e) {
+			// Dialog box saying that such a file does not exist
 			JOptionPane.showMessageDialog(tabbedPane, "File Not Found!");
 		}
-		
+
 	}
 
 	/********************************************************************************************************/
 	public void setTab()
 	{
 		panelTab = new JPanel(new GridBagLayout());
-		GridBagConstraints gbc = new GridBagConstraints();		
+		GridBagConstraints gbc = new GridBagConstraints();
 		panelTab.setOpaque(false);
-		
+
 		HoverButton close = new HoverButton("x");
-		close.setMargin(new Insets(0,0,0,0));
-		
+		close.setMargin(new Insets(0, 0, 0, 0));
+
 		JLabel title = new JLabel(name);
-		
-		close.addActionListener(new ActionListener()
-		{
+
+		close.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) 
-			{
+			public void actionPerformed(ActionEvent e) {
 				Component selected = tabbedPane.getSelectedComponent();
-				if(selected!=null)
-				{
-					//fileTabsList.remove(this);
-					closed= true;
+				if (selected != null) {
+					// fileTabsList.remove(this);
+					closed = true;
 					tabbedPane.remove(selected);
 				}
-			}			
+			}
 		});
-		
+
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.weightx = 1;
-		panelTab.add(title,gbc);
-		
+		panelTab.add(title, gbc);
+
 		gbc.gridx++;
 		gbc.ipadx = 0;
 		gbc.ipady = 0;
 		gbc.weightx = 0;
-		panelTab.add(close,gbc);		
+
+		panelTab.add(close, gbc);
+	}
+	
+	protected class customDocumentListener implements DocumentListener
+	{
+
+		@Override
+		public void changedUpdate(DocumentEvent arg0) 
+		{
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void insertUpdate(DocumentEvent arg0)
+		{
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void removeUpdate(DocumentEvent arg0)
+		{
+			// TODO Auto-generated method stub
+			
+		}
 	}	
 	
 	/********************************************************************************************************/
@@ -184,3 +228,5 @@ public class FileTab
 		}
 	}
 }
+
+
