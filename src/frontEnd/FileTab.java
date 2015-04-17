@@ -6,6 +6,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -13,6 +14,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -27,6 +31,9 @@ import javax.swing.event.UndoableEditListener;
 import javax.swing.text.AbstractDocument;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
+import javax.swing.KeyStroke;
+import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
+import javax.swing.text.Highlighter;
 
 public class FileTab 
 {
@@ -44,8 +51,9 @@ public class FileTab
 	
 	// public ArrayList<FileTab> fileTabsList;
 
-	public FileTab(File file, JTabbedPane tabbedPane,
-			ArrayList<FileTab> fileTabsList) {
+	/********************************************************************************************************/
+	public FileTab(File file,JTabbedPane tabbedPane,ArrayList<FileTab> fileTabsList)
+	{
 		tabFile = file;
 		undoListener = new CustomUndoListener();
 		// this.fileTabsList = fileTabsList;
@@ -61,10 +69,14 @@ public class FileTab
 		document.addUndoableEditListener(undoListener);
 		document.addDocumentListener(new customDocumentListener());
 		this.setTab();
+		
+		//addKeyBindings function
+		AddKeyBindings();
 	}
 
-	public FileTab(String str, JTabbedPane tabbedPane,
-			ArrayList<FileTab> fileTabsList) {
+	/********************************************************************************************************/
+	public FileTab(String str,JTabbedPane tabbedPane,ArrayList<FileTab> fileTabsList)
+	{
 		tabFile = null;
 		undoListener = new CustomUndoListener();
 		name = str;
@@ -79,20 +91,28 @@ public class FileTab
 		document.addUndoableEditListener(undoListener);
 		document.addDocumentListener(new customDocumentListener());
 		this.setTab();
+		
+		//add keyBinding function
+		AddKeyBindings();
 	}
 
-	private void openFile(File file) {
-		String currStr = "", readStr;
 
-		// read from the file and write to the Pane
-		try {
-			BufferedReader in = new BufferedReader(new FileReader(file));
-			// read the string
-			readStr = in.readLine();
-			while (readStr != null) {
-				// add the string to current string
-				currStr = currStr + readStr + "\n";
-				readStr = in.readLine();
+	
+	
+	/********************************************************************************************************/
+	private void openFile(File file)
+	{
+		String currStr="", readStr;
+		
+		//read from the file and write to the Pane
+		try{
+			BufferedReader in= new BufferedReader(new FileReader(file));
+			//read the string
+			readStr= in.readLine();
+			while(readStr != null){
+				//add the string to current string
+				currStr= currStr+ readStr+"\n";
+				readStr= in.readLine();
 			}
 
 			// add currStr to the current Pane
@@ -107,7 +127,9 @@ public class FileTab
 
 	}
 
-	public void setTab() {
+	/********************************************************************************************************/
+	public void setTab()
+	{
 		panelTab = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		panelTab.setOpaque(false);
@@ -138,6 +160,7 @@ public class FileTab
 		gbc.ipadx = 0;
 		gbc.ipady = 0;
 		gbc.weightx = 0;
+
 		panelTab.add(close, gbc);
 	}
 	
@@ -164,7 +187,45 @@ public class FileTab
 			// TODO Auto-generated method stub
 			
 		}
+	}	
+	
+	/********************************************************************************************************/
+	/********************************************************************************************************/
+	//All keybinding functions are to be added from here
+	//Function to add KeyBindings
+	public void AddKeyBindings(){
+		//add an InputMap and ActionMap on the JEditorPane
+		InputMap iMap= editorPane.getInputMap(JComponent.WHEN_FOCUSED);
+		ActionMap aMap= editorPane.getActionMap();
 		
+		String escape= "escape";
+		iMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), escape);
+		aMap.put(escape, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				//remove the highlighting in the text
+				if(find == true){
+					RemoveHighlighting();
+					find= false;
+				}
+			}
+		});
+	}
+	
+	/********************************************************************************************************/
+	//Function to remove Highlighting
+	public void RemoveHighlighting(){
+		
+		Highlighter hl= editorPane.getHighlighter();
+		//fetching the current list of Highlights
+		Highlighter.Highlight[] hls= hl.getHighlights();
+		
+		for(int i=0; i<hls.length; i++){
+			if(hls[i].getPainter() instanceof DefaultHighlightPainter ){
+				hl.removeHighlight(hls[i]);
+			}
+		}
 	}
 }
 
