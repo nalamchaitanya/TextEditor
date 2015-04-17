@@ -1,7 +1,6 @@
 package frontEnd;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -471,7 +470,7 @@ public class Editor {
 		if (file != null) {
 			str = file.getPath();
 			// create a new FileTab
-			FileTab fileTab = new FileTab(file, tabbedPane, fileTabsList);
+			FileTab fileTab = new FileTab(file, tabbedPane);
 			// add the Scroll pane to the TabbedPane
 			tabbedPane.addTab(str, fileTab.scrollPane);
 			// setting up the button at the tab
@@ -490,7 +489,7 @@ public class Editor {
 			str = "Untitled " + k;
 			k++;
 			// creating a new Tab
-			FileTab fileTab = new FileTab(str, tabbedPane, fileTabsList);
+			FileTab fileTab = new FileTab(str, tabbedPane);
 			fileTabsList.add(fileTab);
 			tabbedPane.addTab(str, fileTab.scrollPane);
 			tabbedPane.setTabComponentAt(tabbedPane.indexOfTab(str),

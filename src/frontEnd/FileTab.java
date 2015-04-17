@@ -52,7 +52,7 @@ public class FileTab
 	// public ArrayList<FileTab> fileTabsList;
 
 	/********************************************************************************************************/
-	public FileTab(File file,JTabbedPane tabbedPane,ArrayList<FileTab> fileTabsList)
+	public FileTab(File file,JTabbedPane tabbedPane)
 	{
 		tabFile = file;
 		undoListener = new CustomUndoListener();
@@ -75,7 +75,7 @@ public class FileTab
 	}
 
 	/********************************************************************************************************/
-	public FileTab(String str,JTabbedPane tabbedPane,ArrayList<FileTab> fileTabsList)
+	public FileTab(String str,JTabbedPane tabbedPane)
 	{
 		tabFile = null;
 		undoListener = new CustomUndoListener();
