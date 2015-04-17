@@ -40,7 +40,7 @@ public class FileTab
 	//public ArrayList<FileTab> fileTabsList;
 	
 	/********************************************************************************************************/
-	public FileTab(File file,JTabbedPane tabbedPane,ArrayList<FileTab> fileTabsList)
+	public FileTab(File file,JTabbedPane tabbedPane)
 	{
 		tabFile = file;
 		//this.fileTabsList = fileTabsList;
@@ -59,7 +59,7 @@ public class FileTab
 	}
 
 	/********************************************************************************************************/
-	public FileTab(String str,JTabbedPane tabbedPane,ArrayList<FileTab> fileTabsList)
+	public FileTab(String str,JTabbedPane tabbedPane)
 	{
 		tabFile = null;
 		name = str;

@@ -68,14 +68,6 @@ public class EditBarActionListener implements ActionListener{
 			else if(action.equals("Redo")){
 				//call for Redo
 			}
-			//TODO
-			else if(action.equals("Find")){
-				//call find function
-			}
-			//TODO
-			else if(action.equals("FindAndReplace")){
-				//call function
-			}
 		}
 	}
 
