@@ -3,21 +3,30 @@ package frontEnd;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.JEditorPane;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.JViewport;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
-//common action listener for a few functions like find etc
+//common action listener for a few functions
 public class CommonEditBarActionListener implements ActionListener{
 
 	//Fields
 	JTabbedPane tabbedPane;
 	ArrayList<FileTab> fileTabsList;
 	String action;
+	static int k;
 	
 	//constructor
 	public CommonEditBarActionListener(JTabbedPane tabbedPane, ArrayList<FileTab> fileTabsList, String action){
@@ -30,7 +39,163 @@ public class CommonEditBarActionListener implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
-		if(action.equals("Find")){
+		//basically for every action
+		//for New
+		if(action.equals("New")){
+			//run code for New Document
+			openFileTab(null);
+		}
+		
+		//for Opening a Document
+		else if(action.equals("Open")){
+			//run code for opening a Document
+			// Open the fileChooser
+			JFileChooser jfc = new JFileChooser();
+			jfc.setDialogType(JFileChooser.OPEN_DIALOG);
+			jfc.setDialogTitle("Open the file to be edited");
+			//changed from mainFrame.getContentPane() to tabbedPane
+			jfc.showOpenDialog(tabbedPane);
+			File file = jfc.getSelectedFile();
+			// if a file is selected, or it existx
+			if (file != null) {
+				openFileTab(file);
+			} else
+				JOptionPane.showMessageDialog(tabbedPane, "File Not Found!");
+		}
+		
+		//for saving
+		else if(action.equals("Save")){
+			//run code forsaving a file
+			int t = tabbedPane.getSelectedIndex();
+			if (t != -1) 
+			{
+				CleanList();
+				FileTab temp = fileTabsList.get(t);
+
+				// for the first save call FileChooser
+				if ("Untitled".compareTo(temp.name.split(" ")[0]) == 0) {
+					// call the File Chooser
+					JFileChooser jfc = new JFileChooser();
+					jfc.setDialogType(JFileChooser.OPEN_DIALOG);
+					jfc.setDialogTitle("Save the File");
+					//change from mainFram's contentPane to tabbedPane
+					jfc.showOpenDialog(tabbedPane);
+					File file = jfc.getSelectedFile();
+					if (file != null)
+					{
+						saveFile(file, temp.editorPane);
+						// update the tab name;
+						temp.name = file.getPath();
+						temp.tabFile = file;
+						temp.setTab();
+						tabbedPane.setTabComponentAt(t, temp.panelTab);
+						tabbedPane.setTitleAt(t, temp.name);
+					} else
+						JOptionPane.showMessageDialog(tabbedPane,"File Not Found!");
+				}
+				// for all subsequent saves, just use the name of the
+				// FileTab
+				else
+					saveFile(temp.tabFile, temp.editorPane);
+			}
+
+		}
+		
+		//save as
+		else if(action.equals("SaveAs")){
+			//code for saving
+			int t = tabbedPane.getSelectedIndex();
+			if (t != -1)
+			{
+				// remove all the FileTabs which are closed in the
+				// FileTabList
+				CleanList();
+				FileTab temp = fileTabsList.get(t);
+
+				// opening the FileChooser
+				JFileChooser jfc = new JFileChooser();
+				jfc.setDialogType(JFileChooser.OPEN_DIALOG);
+				jfc.setDialogTitle("Save the File");
+				//changing from mainFram's ContentPane to tabbedPane
+				jfc.showOpenDialog(tabbedPane);
+				File file = jfc.getSelectedFile();
+				// If a file is selected
+				if (file != null)
+				{
+					saveFile(file, temp.editorPane);
+					// update the tab name;
+					temp.name = file.getPath();
+					temp.tabFile = file;
+					temp.setTab();
+					tabbedPane.setTabComponentAt(t, temp.panelTab);
+					tabbedPane.setTitleAt(t, temp.name);
+				}
+				// if no file is selected
+				else
+					JOptionPane.showMessageDialog(tabbedPane,"File Not Found!");
+			}
+
+		}
+		
+		//Quitting needs a MainFrame
+		
+		//for Cut
+		else if(action.equals("Cut")){
+			//implement cut action
+			//to the action on the highlighted text
+			JScrollPane curr= (JScrollPane)tabbedPane.getSelectedComponent();
+			if(curr != null){
+				JViewport view= (JViewport)curr.getViewport();
+				JEditorPane editor= (JEditorPane)view.getComponent(0);
+				//cut the selected text
+				try{
+					editor.cut();
+				}
+				catch(NullPointerException exp){
+					;
+				}
+			}
+		}
+		
+		//for Copy
+		else if(action.equals("Copy")){
+			//to the action on the highlighted text
+			JScrollPane curr= (JScrollPane)tabbedPane.getSelectedComponent();
+			if(curr != null){
+				JViewport view= (JViewport)curr.getViewport();
+				JEditorPane editor= (JEditorPane)view.getComponent(0);
+				//cut the selected text
+				try{
+					editor.copy();
+				}
+				catch(NullPointerException exp){
+					;
+				}
+			}
+		}
+		
+		//for Paste
+		else if(action.equals("Paste")){
+			//to the action on the highlighted text
+			JScrollPane curr= (JScrollPane)tabbedPane.getSelectedComponent();
+			if(curr != null)
+			{
+				JViewport view= (JViewport)curr.getViewport();
+				JEditorPane editor= (JEditorPane)view.getComponent(0);
+				//cut the selected text
+				try
+				{
+					editor.paste();
+				}
+				catch(NullPointerException exp)
+				{
+					;
+				}
+			}
+		}
+		
+		//for Find
+		else if(action.equals("Find")){
 			//run code for find
 			//see the current tab
 			int t= tabbedPane.getSelectedIndex();
@@ -50,6 +215,8 @@ public class CommonEditBarActionListener implements ActionListener{
 				}
 			}
 		}
+		
+		//For FindAndReplace
 		else if(action.equals("FindAndReplace")){
 			//run code for FindAndReplace
 			//get the curren tab
@@ -79,6 +246,8 @@ public class CommonEditBarActionListener implements ActionListener{
 				}
 			}
 		}
+		
+		//For Undo
 		else if(action.equals("Undo")){
 			//run undo code 
 			int t = tabbedPane.getSelectedIndex();
@@ -88,6 +257,8 @@ public class CommonEditBarActionListener implements ActionListener{
 				currTab.undoListener.undoAction.actionPerformed(e);
 			}
 		}
+		
+		//For Redo
 		else if(action.equals("Redo")){
 			//run Redo code
 			int t = tabbedPane.getSelectedIndex();
@@ -101,6 +272,63 @@ public class CommonEditBarActionListener implements ActionListener{
 	}
 	
 
+	/********************************************************************************************************/
+	// code for opening existing files or new files
+	private void openFileTab(File file) {
+		//make k 1
+		if(k ==0)
+			k++;
+		
+		// remove all the FileTabs which are closed in the FileTabList
+		CleanList();
+
+		String str;
+		if (file != null) {
+			str = file.getPath();
+			//create a new FileTab
+			FileTab fileTab = new FileTab(file,tabbedPane);
+			//add the Scroll pane to the TabbedPane
+			tabbedPane.addTab(str,fileTab.scrollPane);
+			//setting up the button at the tab
+			//setting button by string name gives error, check this
+			tabbedPane.setTabComponentAt(tabbedPane.indexOfTab(str), fileTab.panelTab);
+			fileTabsList.add(fileTab);
+			tabbedPane.setTitleAt(fileTabsList.indexOf(fileTab), fileTab.name);
+		}
+		// this part is for opening new tabs
+		else {
+			// if there are no tabs in the ScrollPane, set k to 1
+			if (fileTabsList.size() == 0) {
+				// the window is empty
+				k = 1;
+			}
+			str = "Untitled " + k;
+			k++;
+
+			//creating a new Tab
+			FileTab fileTab = new FileTab(str,tabbedPane);
+			fileTabsList.add(fileTab);
+			tabbedPane.addTab(str, fileTab.scrollPane);
+			tabbedPane.setSelectedComponent(fileTab.scrollPane);
+			tabbedPane.setTabComponentAt(tabbedPane.indexOfTab(str),
+					fileTab.panelTab);
+		}
+	}
+	
+	/********************************************************************************************************/
+	private void saveFile(File file, JEditorPane selected) {
+		try {
+			BufferedWriter out = new BufferedWriter(new FileWriter(
+					file.getPath()));
+			out.write(selected.getText());
+			// flush and close the writer
+			out.flush();
+			out.close();
+		} catch (IOException e) {
+			;
+		}
+	}
+	
 	/********************************************************************************************************/
 	//Code for Find and replace
 	public void FindAndReplace(FileTab currTab, String str1, String str2){

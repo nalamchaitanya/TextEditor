@@ -11,7 +11,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -19,19 +18,14 @@ import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.UndoableEditEvent;
-import javax.swing.event.UndoableEditListener;
 import javax.swing.text.AbstractDocument;
-import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoManager;
-import javax.swing.KeyStroke;
 import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 import javax.swing.text.Highlighter;
 
@@ -198,10 +192,15 @@ public class FileTab
 		InputMap iMap= editorPane.getInputMap(JComponent.WHEN_FOCUSED);
 		ActionMap aMap= editorPane.getActionMap();
 		
-		String escape= "escape";
-		iMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), escape);
-		aMap.put(escape, new AbstractAction() {
+		String binding= "escape";
+		iMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), binding);
+		aMap.put(binding, new AbstractAction() {
 			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				//remove the highlighting in the text
@@ -211,7 +210,79 @@ public class FileTab
 				}
 			}
 		});
+		
+		//adding Key Bindings to delete tab
+		binding= "remove";
+		iMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_W, java.awt.event.InputEvent.CTRL_DOWN_MASK ), binding);
+		aMap.put(binding, new AbstractAction() {
+			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				//remove the FileTab
+				Component selected= tabbedPane.getSelectedComponent();
+				tabbedPane.remove(selected);
+				//the fileTabsList still contains it 
+				closed=true;
+			}
+		});
+		
+		//for switching between tabs
+		binding= "switch";
+		iMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB,  java.awt.event.InputEvent.SHIFT_DOWN_MASK), binding);
+		aMap.put(binding, new AbstractAction() {
+			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				int t= tabbedPane.getSelectedIndex();
+				if(t != -1 ){
+					try{
+						tabbedPane.setSelectedIndex(t+1);
+					}
+					catch(IndexOutOfBoundsException e){
+						;
+					}
+				}
+			}
+		});
+		
+		//for switching between tabs
+		binding= "backSwitch";
+		iMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, java.awt.event.InputEvent.SHIFT_DOWN_MASK+java.awt.event.InputEvent.ALT_DOWN_MASK), binding);
+		aMap.put(binding, new AbstractAction() {
+			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				int t= tabbedPane.getSelectedIndex();
+				if(t != -1 ){
+					try{
+						if(t >= 1)
+							tabbedPane.setSelectedIndex(t-1);
+					}
+					catch(IndexOutOfBoundsException e){
+						System.out.println("boom");
+						;
+					}
+				}
+			}
+		});
+
 	}
+	
 	
 	/********************************************************************************************************/
 	//Function to remove Highlighting
