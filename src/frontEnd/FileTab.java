@@ -1,6 +1,7 @@
 package frontEnd;
 
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -11,33 +12,27 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
-import javax.swing.JEditorPane;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.UndoableEditEvent;
-import javax.swing.event.UndoableEditListener;
 import javax.swing.text.AbstractDocument;
-import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoManager;
-import javax.swing.KeyStroke;
 import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 import javax.swing.text.Highlighter;
 
 public class FileTab 
 {
-	JEditorPane editorPane;
+	JTextPane editorPane;
 	JScrollPane scrollPane;
 	JTabbedPane tabbedPane;
 	JPanel panelTab;
@@ -47,6 +42,11 @@ public class FileTab
 	boolean closed;
 	AbstractDocument document;
 	
+	public Font font;
+	boolean bold;
+	boolean italic;
+	boolean underLine;
+	
 	public CustomUndoListener undoListener;
 	
 	// public ArrayList<FileTab> fileTabsList;
@@ -55,10 +55,17 @@ public class FileTab
 	public FileTab(File file,JTabbedPane tabbedPane)
 	{
 		tabFile = file;
+		
 		undoListener = new CustomUndoListener();
-		// this.fileTabsList = fileTabsList;
+		
 		closed = false;
-		editorPane = new JEditorPane();
+		editorPane = new JTextPane();
+		
+		font = editorPane.getFont();
+		bold = font.isBold();
+		italic = font.isItalic();
+		underLine = false;
+		
 		scrollPane = new JScrollPane(editorPane);
 		this.tabbedPane = tabbedPane;
 		name = file.getPath();
@@ -69,7 +76,6 @@ public class FileTab
 		document.addUndoableEditListener(undoListener);
 		document.addDocumentListener(new customDocumentListener());
 		this.setTab();
-		
 		//addKeyBindings function
 		AddKeyBindings();
 	}
@@ -83,7 +89,13 @@ public class FileTab
 		// this.fileTabsList = fileTabsList;
 		closed = false;
 		this.tabbedPane = tabbedPane;
-		editorPane = new JEditorPane();
+		editorPane = new JTextPane();
+		
+		font = editorPane.getFont();
+		bold = font.isBold();
+		italic = font.isItalic();
+		underLine = false;
+		
 		scrollPane = new JScrollPane(editorPane);
 		// set find as false
 		find = false;
@@ -117,7 +129,7 @@ public class FileTab
 
 			// add currStr to the current Pane
 			editorPane.setText(currStr);
-
+			
 			// close the file
 			in.close();
 		} catch (IOException e) {

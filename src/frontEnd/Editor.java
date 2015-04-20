@@ -1,7 +1,7 @@
 package frontEnd;
 
-import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -87,6 +88,11 @@ public class Editor {
 		JButton redo=makeButton("Redo.png", "Redo Action", "Redo");
 		JButton find=makeButton("Find.png", "Find A String", "Find");
 		JButton findAndReplace=makeButton("FindAndReplace.png", "Find and Replace", "FindAndReplace");
+		JButton bold=makeButton("Bold.png", "Make Bold", "Bold");
+		JButton italic=makeButton("Italic.png", "Make Italic", "Italic");
+		JButton underLine=makeButton("Underline.png", "Make Underline", "Underline");
+		
+		
 		
 		//adding the buttons
 		editBar.add(cut);
@@ -96,6 +102,23 @@ public class Editor {
 		editBar.add(redo);
 		editBar.add(find);
 		editBar.add(findAndReplace);
+		editBar.add(bold);
+		editBar.add(italic);
+		editBar.add(underLine);
+		
+		String fonts[] = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+		
+		JComboBox<String> font = new JComboBox<String>();
+		JComboBox<Integer> size = new JComboBox<Integer>();
+		for(int i =0;i<fonts.length;i++)
+			font.addItem(fonts[i]);
+		for(int i = 12;i<33;i+=2)
+			size.addItem(i);
+		size.addActionListener(new CommonEditBarActionListener(tabbedPane, fileTabsList,"Size"));
+		font.addActionListener(new CommonEditBarActionListener(tabbedPane, fileTabsList,"Font"));
+		editBar.add(size);
+		editBar.add(font);
+		font.setBounds(175, 25, 150, 30);
 		
 	}
 	//make the button
@@ -129,6 +152,18 @@ public class Editor {
 		else if(action.equals("Redo")){
 			button.addActionListener(new CommonEditBarActionListener(tabbedPane, fileTabsList, "Redo"));
 		}
+		else if(action.equals("Bold"))
+		{
+			button.addActionListener(new CommonEditBarActionListener(tabbedPane, fileTabsList, "Bold"));
+		}
+		else if(action.equals("Italic"))
+		{
+			button.addActionListener(new CommonEditBarActionListener(tabbedPane, fileTabsList, "Italic"));
+		}
+		else if(action.equals("Underline"))
+		{
+			button.addActionListener(new CommonEditBarActionListener(tabbedPane, fileTabsList, "Underline"));
+		}		
 		else{
 			//set Action Listener
 			button.addActionListener(new EditBarActionListener(action, tabbedPane));
