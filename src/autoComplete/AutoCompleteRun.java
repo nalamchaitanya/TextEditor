@@ -1,11 +1,10 @@
 package autoComplete;
 
-import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
@@ -13,15 +12,14 @@ import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Caret;
 
 public class AutoCompleteRun implements Runnable
 {
@@ -31,6 +29,7 @@ public class AutoCompleteRun implements Runnable
 	JEditorPane editorPane;
 	Node node;
 	JFrame frameTemp;
+	KeyListener keyListen;
 	
 	public AutoCompleteRun(JEditorPane editorPane) throws BadLocationException
 	{
@@ -39,13 +38,132 @@ public class AutoCompleteRun implements Runnable
 		this.editorPane = editorPane;
 		str = editorPane.getText();
 		
-		editorPane.getDocument().addDocumentListener(new customDocumentListener());
+		//editorPane.getDocument().addDocumentListener(new customDocumentListener());
+		editorPane.addKeyListener(new customKeyListener());
 		//editorPane.addCaretListener(new customCaretListener());
 		
 		node = trie.root;
 	}
 	
-	
+	protected class customKeyListener implements KeyListener
+	{
+		String str;
+		boolean neglect;
+		int beforeIndex;
+		String beforeStr;
+		InputMap  iMap;
+		ActionMap aMap;
+		
+		public customKeyListener()
+		{
+			str = "";
+			beforeIndex = 0;
+			
+			iMap= editorPane.getInputMap(JComponent.WHEN_FOCUSED);
+			aMap= editorPane.getActionMap();
+			
+			String binding= "autoComplete";
+			iMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, java.awt.event.InputEvent.CTRL_DOWN_MASK), binding);
+			aMap.put(binding, new AbstractAction()
+			{
+				@Override
+				public void actionPerformed(ActionEvent e) 
+				{
+					Point p = editorPane.getCaret().getMagicCaretPosition();
+					JComboBox<String> suggest = new JComboBox<String>();
+					for(int i = 0;i<list.size();i++)
+						suggest.addItem(list.get(i));
+					/*JOptionPane pane = new JOptionPane(suggest,JOptionPane.INFORMATION_MESSAGE,JOptionPane.CANCEL_OPTION);
+					JDialog suggestion = pane.createDialog("");*/
+					
+					suggest.addActionListener(new autoFillActionListener());
+					
+					frameTemp = new JFrame();
+					frameTemp.add(suggest);
+					if(p!=null)
+						frameTemp.setBounds(p.x+10,p.y+130,200,20);
+					else
+						frameTemp.setBounds(500,200 , 200, 20);
+					frameTemp.pack();
+					frameTemp.setVisible(true);
+				}
+			});
+			
+			binding= "escape";
+			iMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE,0), binding);
+			aMap.put(binding, new AbstractAction()
+			{
+				@Override
+				public void actionPerformed(ActionEvent arg0)
+				{
+					frameTemp.dispose();
+				}
+			});
+		}
+
+		@Override
+		public void keyPressed(KeyEvent e)
+		{
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void keyTyped(KeyEvent e)
+		{
+			boolean ctrl = false;
+			char ch = e.getKeyChar();
+			if((e.getModifiers()& ActionEvent.CTRL_MASK)==ActionEvent.CTRL_MASK)
+				ctrl = true;
+			if(ctrl == false)
+			{	
+				if('A'<=ch&&ch<='Z')
+					ch = (char) ('a'+ ch -'A');
+				if('a'<=ch&&ch<='z')
+				{
+					str = str + ch;
+					if(node!=null)
+						node = node.arr[ch-'a'];
+					System.out.println("******************* "+str+" ********************");
+					if(node!=null)
+					{
+						//node.printList();
+						list = node.giveStrings();
+						if(list.get(0).equals("")==false)
+							list.add(0, "");
+					}
+				}
+				else if(ch == 8)
+				{
+					str = str.substring(0,str.length()-1);
+					if(node!=null)
+						node = node.parent;
+					System.out.println("******************* "+str+" ********************");
+					if(node!=null)
+					{
+						//node.printList();
+						list = node.giveStrings();
+						if(list.get(0).equals("")==false)
+							list.add(0, "");
+					}
+				}
+				else
+				{
+					str = cleanString(str);
+					trie.addString(str);
+					str = "";
+					node = trie.root;
+					list = node.giveStrings();
+					//node.printList();
+				}
+			}
+		}
+	}
 	class autoFillActionListener implements ActionListener
 	{
 		
@@ -133,10 +251,10 @@ public class AutoCompleteRun implements Runnable
 					frameTemp.dispose();
 				}
 				
-			});
-			
+			});		
 			
 		}
+		
 		@Override
 		public void changedUpdate(DocumentEvent e) 
 		{
