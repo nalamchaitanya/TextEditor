@@ -214,11 +214,11 @@ public class FileTab
 		panelTab.add(close, gbc);
 	}
 	
-		/********************************************************************************************************/
-	/********************************************************************************************************/
-	//All keybinding functions are to be added from here
-	//Function to add KeyBindings
-
+	/**
+	 * All keybinding functions are to be added from here
+	 * Function to add KeyBindings
+	 */
+	
 	public void AddKeyBindings(){
 		//add an InputMap and ActionMap on the JEditorPane
 		InputMap iMap= editorPane.getInputMap(JComponent.WHEN_FOCUSED);
@@ -312,7 +312,6 @@ public class FileTab
 				}
 			}
 		});
-
 	}
 	
 	
