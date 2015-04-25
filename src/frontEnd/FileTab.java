@@ -23,11 +23,14 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 import javax.swing.text.Highlighter;
+import SpellCheck.*;
 
 public class FileTab 
 {
@@ -41,12 +44,19 @@ public class FileTab
 	boolean closed;
 	AbstractDocument document;
 	
+	//adding SpellChecker
+	SpellChecker spelling;
+	
+	//passing tree to theFile tab
+	BKTree tree;
+	
 	public CustomUndoListener undoListener;
 	
 	// public ArrayList<FileTab> fileTabsList;
 
-	/********************************************************************************************************/
-	public FileTab(File file,JTabbedPane tabbedPane)
+	/**
+	 * @throws IOException ******************************************************************************************************/
+	public FileTab(File file,JTabbedPane tabbedPane, BKTree t) throws IOException
 	{
 		tabFile = file;
 		undoListener = new CustomUndoListener();
@@ -62,14 +72,20 @@ public class FileTab
 		document = (AbstractDocument) editorPane.getDocument();
 		document.addUndoableEditListener(undoListener);
 		document.addDocumentListener(new customDocumentListener());
-		this.setTab();
+		this.setTab();	
+		//set tree
+		tree= t;
 		
 		//addKeyBindings function
 		AddKeyBindings();
+		
+		//initialize spellChecker
+		spelling= new SpellChecker(editorPane,tree);
 	}
 
-	/********************************************************************************************************/
-	public FileTab(String str,JTabbedPane tabbedPane)
+	/**
+	 * @throws IOException ******************************************************************************************************/
+	public FileTab(String str,JTabbedPane tabbedPane, BKTree t) throws IOException
 	{
 		tabFile = null;
 		undoListener = new CustomUndoListener();
@@ -85,9 +101,14 @@ public class FileTab
 		document.addUndoableEditListener(undoListener);
 		document.addDocumentListener(new customDocumentListener());
 		this.setTab();
+		//set tree
+		tree= t;
 		
 		//add keyBinding function
 		AddKeyBindings();
+		
+		//initializingspell Checker
+		spelling= new SpellChecker(editorPane,tree);
 	}
 
 
