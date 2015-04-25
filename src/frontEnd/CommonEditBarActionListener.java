@@ -21,6 +21,7 @@ import javax.swing.JTextPane;
 import javax.swing.JViewport;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+import SpellCheck.*;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.StyleConstants;
 
@@ -32,12 +33,14 @@ public class CommonEditBarActionListener implements ActionListener{
 	ArrayList<FileTab> fileTabsList;
 	String action;
 	static int k;
+	BKTree tree;
 	
 	//constructor
-	public CommonEditBarActionListener(JTabbedPane tabbedPane, ArrayList<FileTab> fileTabsList, String action){
+	public CommonEditBarActionListener(JTabbedPane tabbedPane, ArrayList<FileTab> fileTabsList, String action, BKTree t){
 		this.tabbedPane= tabbedPane;
 		this.fileTabsList= fileTabsList;
 		this.action= action;
+		tree= t;
 	}
 	
 	//function
@@ -48,7 +51,12 @@ public class CommonEditBarActionListener implements ActionListener{
 		//for New
 		if(action.equals("New")){
 			//run code for New Document
-			openFileTab(null);
+			try {
+				openFileTab(null);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 		
 		//for Opening a Document
@@ -63,8 +71,14 @@ public class CommonEditBarActionListener implements ActionListener{
 			File file = jfc.getSelectedFile();
 			// if a file is selected, or it existx
 			if (file != null) {
-				openFileTab(file);
-			} else
+				try {
+					openFileTab(file);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			} 
+			else
 				JOptionPane.showMessageDialog(tabbedPane, "File Not Found!");
 		}
 		
@@ -337,13 +351,13 @@ public class CommonEditBarActionListener implements ActionListener{
 			}
 		}
 		
-			
 	}
 	
 
-	/********************************************************************************************************/
+	/**
+	 * @throws IOException ******************************************************************************************************/
 	// code for opening existing files or new files
-	private void openFileTab(File file) {
+	private void openFileTab(File file) throws IOException {
 		//make k 1
 		if(k ==0)
 			k++;
@@ -355,7 +369,7 @@ public class CommonEditBarActionListener implements ActionListener{
 		if (file != null) {
 			str = file.getPath();
 			//create a new FileTab
-			FileTab fileTab = new FileTab(file,tabbedPane);
+			FileTab fileTab = new FileTab(file,tabbedPane, tree);
 			//add the Scroll pane to the TabbedPane
 			tabbedPane.addTab(str,fileTab.scrollPane);
 			//setting up the button at the tab
@@ -375,10 +389,9 @@ public class CommonEditBarActionListener implements ActionListener{
 			k++;
 
 			//creating a new Tab
-			FileTab fileTab = new FileTab(str,tabbedPane);
+			FileTab fileTab = new FileTab(str,tabbedPane, tree);
 			fileTabsList.add(fileTab);
 			tabbedPane.addTab(str, fileTab.scrollPane);
-			tabbedPane.setSelectedComponent(fileTab.scrollPane);
 			tabbedPane.setTabComponentAt(tabbedPane.indexOfTab(str),
 					fileTab.panelTab);
 		}

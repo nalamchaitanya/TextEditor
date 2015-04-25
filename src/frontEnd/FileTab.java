@@ -36,6 +36,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Caret;
 import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 import javax.swing.text.Highlighter;
+import SpellCheck.*;
 
 import autoComplete.AutoCompleteRun;
 import autoComplete.Trie;
@@ -52,19 +53,25 @@ public class FileTab
 	boolean closed;
 	AbstractDocument document;
 	
+	//adding SpellChecker
+	SpellChecker spelling;
+	
+	//passing tree to theFile tab
+	BKTree tree;
+	
 	public Font font;
 	boolean bold;
 	boolean italic;
 	boolean underLine;
-	
+
 	public CustomUndoListener undoListener;
 	public AutoCompleteRun autoComplete;
 	
 	// public ArrayList<FileTab> fileTabsList;
 
 	/**
-	 * @throws BadLocationException ******************************************************************************************************/
-	public FileTab(File file,JTabbedPane tabbedPane)
+	 * @throws IOException ******************************************************************************************************/
+	public FileTab(File file,JTabbedPane tabbedPane, BKTree t) throws IOException
 	{
 		tabFile = file;
 		
@@ -87,11 +94,16 @@ public class FileTab
 		
 		document = (AbstractDocument) editorPane.getDocument();
 		document.addUndoableEditListener(undoListener);
+		document.addDocumentListener(new customDocumentListener());
+		this.setTab();	
+		//set tree
+		tree= t;
 		
+		//editing text		
 		editorPane.getCaret().setVisible(true);
 		editorPane.setCaretPosition(0);
 		this.setTab();
-		
+
 		try {
 			autoComplete = new AutoCompleteRun(editorPane);
 		} catch (BadLocationException e) {
@@ -101,11 +113,14 @@ public class FileTab
 		new Thread(autoComplete).start();
 		//addKeyBindings function
 		AddKeyBindings();
+		
+		//initialize spellChecker
+		spelling= new SpellChecker(editorPane,tree);
 	}
 
 	/**
-	 * @throws BadLocationException ******************************************************************************************************/
-	public FileTab(String str,JTabbedPane tabbedPane)
+	 * @throws IOException ******************************************************************************************************/
+	public FileTab(String str,JTabbedPane tabbedPane, BKTree t) throws IOException
 	{
 		tabFile = null;
 		undoListener = new CustomUndoListener();
@@ -130,6 +145,8 @@ public class FileTab
 		editorPane.getCaret().setVisible(true);
 		editorPane.setCaretPosition(0);
 		this.setTab();
+		//set tree
+		tree= t;
 		
 		try {
 			autoComplete = new AutoCompleteRun(editorPane);
@@ -141,6 +158,9 @@ public class FileTab
 		
 		//add keyBinding function
 		AddKeyBindings();
+		
+		//initializingspell Checker
+		spelling= new SpellChecker(editorPane,tree);
 	}
 
 
