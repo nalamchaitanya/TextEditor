@@ -1,6 +1,7 @@
 package frontEnd;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
@@ -9,16 +10,20 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.JViewport;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import SpellCheck.*;
+import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.StyleConstants;
 
 //common action listener for a few functions
 public class CommonEditBarActionListener implements ActionListener{
@@ -281,7 +286,71 @@ public class CommonEditBarActionListener implements ActionListener{
 				FileTab currTab = fileTabsList.get(t);
 				currTab.undoListener.redoAction.actionPerformed(e);
 			}
-		}	
+		}
+		else if(action.equals("Size"))
+		{
+			int t = tabbedPane.getSelectedIndex();
+			if(t!=-1)
+			{
+				CleanList();
+				FileTab currTab = fileTabsList.get(t);
+				currTab.font = new Font(currTab.font.getName(),currTab.font.getStyle(),(int)((JComboBox)e.getSource()).getSelectedItem());
+				MutableAttributeSet attr = (currTab.editorPane).getInputAttributes();
+				StyleConstants.setFontSize(attr, currTab.font.getSize());
+			}
+		}
+		else if(action.equals("Font"))
+		{
+			int t = tabbedPane.getSelectedIndex();
+			if(t!=-1)
+			{
+				CleanList();
+				FileTab currTab = fileTabsList.get(t);
+				currTab.font = new Font((String) ((JComboBox)e.getSource()).getSelectedItem(),currTab.font.getStyle(),currTab.font.getSize());
+				MutableAttributeSet attr = (currTab.editorPane).getInputAttributes();
+				StyleConstants.setFontFamily(attr, currTab.font.getName());
+			}
+		}
+		else if(action.equals("Bold"))
+		{
+			int t = tabbedPane.getSelectedIndex();
+			if(t!=-1)
+			{
+				CleanList();
+				FileTab currTab = fileTabsList.get(t);
+				currTab.font = new Font(currTab.font.getName(),currTab.font.BOLD,currTab.font.getSize());
+				MutableAttributeSet attr = (currTab.editorPane).getInputAttributes();
+				currTab.bold = !currTab.bold;
+				StyleConstants.setBold(attr, currTab.bold);
+			}
+		}
+		else if(action.equals("Italic"))
+		{
+			int t = tabbedPane.getSelectedIndex();
+			if(t!=-1)
+			{
+				CleanList();
+				FileTab currTab = fileTabsList.get(t);
+				currTab.font = new Font(currTab.font.getName(),currTab.font.ITALIC,currTab.font.getSize());
+				MutableAttributeSet attr = ((JTextPane)currTab.editorPane).getInputAttributes();
+				currTab.italic = !currTab.italic;
+				StyleConstants.setItalic(attr, currTab.italic);
+			}
+		}
+		else if(action.equals("Underline"))
+		{
+			int t = tabbedPane.getSelectedIndex();
+			if(t!=-1)
+			{
+				CleanList();
+				FileTab currTab = fileTabsList.get(t);
+				currTab.font = new Font(currTab.font.getName(),currTab.font.ITALIC,currTab.font.getSize());
+				MutableAttributeSet attr = (currTab.editorPane).getInputAttributes();
+				currTab.underLine = !currTab.underLine;
+				StyleConstants.setUnderline(attr, currTab.underLine);
+			}
+		}
+		
 	}
 	
 

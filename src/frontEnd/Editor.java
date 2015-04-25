@@ -1,6 +1,7 @@
 package frontEnd;
 
 import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,6 +17,7 @@ import java.util.LinkedList;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -121,11 +123,14 @@ public class Editor {
 		//paste.setPreferredSize(new Dimension(25, 25));
 		
 		//adding Undo, Redo, Find, Find&Replace Buttons
-		JButton undo=makeButton("Undo.jpg", "Undo Previous Action", "Undo");
-		JButton redo=makeButton("Redo.jpg", "Redo Action", "Redo");
-		JButton find=makeButton("Find.jpg", "Find A String", "Find");
-		JButton findAndReplace=makeButton("FindAndReplace.jpg", "Find and Replace", "FindAndReplace");
-		
+		JButton undo=makeButton("Undo.png", "Undo Previous Action", "Undo");
+		JButton redo=makeButton("Redo.png", "Redo Action", "Redo");
+		JButton find=makeButton("Find.png", "Find A String", "Find");
+		JButton findAndReplace=makeButton("FindAndReplace.png", "Find and Replace", "FindAndReplace");
+		JButton bold=makeButton("Bold.png", "Make Bold", "Bold");
+		JButton italic=makeButton("Italic.png", "Make Italic", "Italic");
+		JButton underLine=makeButton("Underline.png", "Make Underline", "Underline");
+				
 		//adding the buttons
 		editBar.add(newDoc);
 		editBar.add(open);
@@ -138,6 +143,23 @@ public class Editor {
 		editBar.add(redo);
 		editBar.add(find);
 		editBar.add(findAndReplace);
+		editBar.add(bold);
+		editBar.add(italic);
+		editBar.add(underLine);
+		
+		String fonts[] = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+		
+		JComboBox<String> font = new JComboBox<String>();
+		JComboBox<Integer> size = new JComboBox<Integer>();
+		for(int i =0;i<fonts.length;i++)
+			font.addItem(fonts[i]);
+		for(int i = 12;i<33;i+=2)
+			size.addItem(i);
+		size.addActionListener(new CommonEditBarActionListener(tabbedPane, fileTabsList,"Size", tree));
+		font.addActionListener(new CommonEditBarActionListener(tabbedPane, fileTabsList,"Font", tree));
+		editBar.add(size);
+		editBar.add(font);
+		font.setBounds(175, 25, 150, 30);
 		
 	}
 	//make the button
@@ -199,8 +221,22 @@ public class Editor {
 		else if(action.equals("Redo")){
 			button.addActionListener(new CommonEditBarActionListener(tabbedPane, fileTabsList, "Redo", tree));
 		}
-
-		
+		else if(action.equals("Bold"))
+		{
+			button.addActionListener(new CommonEditBarActionListener(tabbedPane, fileTabsList, "Bold", tree));
+		}
+		else if(action.equals("Italic"))
+		{
+			button.addActionListener(new CommonEditBarActionListener(tabbedPane, fileTabsList, "Italic", tree));
+		}
+		else if(action.equals("Underline"))
+		{
+			button.addActionListener(new CommonEditBarActionListener(tabbedPane, fileTabsList, "Underline", tree));
+		}		
+		else{
+			//set Action Listener
+			button.addActionListener(new CommonEditBarActionListener(tabbedPane,fileTabsList,action, tree));
+		}		
 		return button;
 	}
 	
@@ -335,47 +371,7 @@ public class Editor {
 		menuBar.add(menu);
 	}
 
-
-	private void showEditor() {
-
-	}
-
-	public static void main(String[] args) throws IOException, ClassNotFoundException {
-		/*//add the whole dictionary to BKTree
-		// create and serialize a BKTree
-
-		//FileInputStream in= new FileInputStream("Tree.ser");
-		//ObjectInputStream objIn= new ObjectInputStream(in);
-		
-		//get the tree, search from tree
-		//tree= (BKTree)objIn.readObject();
-		// create and serialize a BKTree
-		BKTree tree = new BKTree("start");
-
-		// add the whole text big.txt
-		BufferedReader in = new BufferedReader(new FileReader("Big.txt"));
-
-		String str;
-		while ((str = in.readLine()) != null) {
-			tree.addToBKTree(str);
-		}
-
-		LinkedList<String> l= null;
-		
-		if(tree.BKTreeHasWord("tak") == false){
-			//search for words
-			l= tree.searchBKTree("tak", 1);
-		}
-		
-		if(l !=null){
-			//print the list
-			for(int i=0; i<l.size(); i++){
-				System.out.println(l.get(i));
-			}
-		}
-		//forsome fricking reason,it takes much longer to actually read from the serialized file than
-		//simply contructing the tree on demand!!
-		*/
+	public static void main(String[] args) throws IOException {
 		Editor edt = new Editor();
 	}
 }

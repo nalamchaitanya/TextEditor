@@ -1,9 +1,11 @@
 package frontEnd;
 
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -16,25 +18,32 @@ import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
-import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Caret;
 import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 import javax.swing.text.Highlighter;
 import SpellCheck.*;
 
+import autoComplete.AutoCompleteRun;
+import autoComplete.Trie;
+
 public class FileTab 
 {
-	JEditorPane editorPane;
+	JTextPane editorPane;
 	JScrollPane scrollPane;
 	JTabbedPane tabbedPane;
 	JPanel panelTab;
@@ -50,7 +59,13 @@ public class FileTab
 	//passing tree to theFile tab
 	BKTree tree;
 	
+	public Font font;
+	boolean bold;
+	boolean italic;
+	boolean underLine;
+
 	public CustomUndoListener undoListener;
+	public AutoCompleteRun autoComplete;
 	
 	// public ArrayList<FileTab> fileTabsList;
 
@@ -59,16 +74,24 @@ public class FileTab
 	public FileTab(File file,JTabbedPane tabbedPane, BKTree t) throws IOException
 	{
 		tabFile = file;
+		
 		undoListener = new CustomUndoListener();
-		// this.fileTabsList = fileTabsList;
+		
 		closed = false;
-		editorPane = new JEditorPane();
+		editorPane = new JTextPane();
+		font = editorPane.getFont();
+		bold = font.isBold();
+		italic = font.isItalic();
+		underLine = false;
+		
 		scrollPane = new JScrollPane(editorPane);
 		this.tabbedPane = tabbedPane;
 		name = file.getPath();
 		// put find as false
 		find = false;
-		this.openFile(file);
+		
+		boolean fileOpened = this.openFile(file);
+		
 		document = (AbstractDocument) editorPane.getDocument();
 		document.addUndoableEditListener(undoListener);
 		document.addDocumentListener(new customDocumentListener());
@@ -76,6 +99,18 @@ public class FileTab
 		//set tree
 		tree= t;
 		
+		//editing text		
+		editorPane.getCaret().setVisible(true);
+		editorPane.setCaretPosition(0);
+		this.setTab();
+
+		try {
+			autoComplete = new AutoCompleteRun(editorPane);
+		} catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		new Thread(autoComplete).start();
 		//addKeyBindings function
 		AddKeyBindings();
 		
@@ -93,16 +128,33 @@ public class FileTab
 		// this.fileTabsList = fileTabsList;
 		closed = false;
 		this.tabbedPane = tabbedPane;
-		editorPane = new JEditorPane();
+		editorPane = new JTextPane();
+		
+		font = editorPane.getFont();
+		bold = font.isBold();
+		italic = font.isItalic();
+		underLine = false;
+		
 		scrollPane = new JScrollPane(editorPane);
 		// set find as false
 		find = false;
+		
 		document = (AbstractDocument) editorPane.getDocument();
 		document.addUndoableEditListener(undoListener);
-		document.addDocumentListener(new customDocumentListener());
+		
+		editorPane.getCaret().setVisible(true);
+		editorPane.setCaretPosition(0);
 		this.setTab();
 		//set tree
 		tree= t;
+		
+		try {
+			autoComplete = new AutoCompleteRun(editorPane);
+		} catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		new Thread(autoComplete).start();
 		
 		//add keyBinding function
 		AddKeyBindings();
@@ -114,8 +166,9 @@ public class FileTab
 
 	
 	
-	/********************************************************************************************************/
-	private void openFile(File file)
+	/**
+	 * @return ******************************************************************************************************/
+	private boolean openFile(File file)
 	{
 		String currStr="", readStr;
 		
@@ -132,12 +185,14 @@ public class FileTab
 
 			// add currStr to the current Pane
 			editorPane.setText(currStr);
-
+			
 			// close the file
 			in.close();
+			return true;
 		} catch (IOException e) {
 			// Dialog box saying that such a file does not exist
 			JOptionPane.showMessageDialog(tabbedPane, "File Not Found!");
+			return false;
 		}
 
 	}
@@ -179,35 +234,11 @@ public class FileTab
 		panelTab.add(close, gbc);
 	}
 	
-	protected class customDocumentListener implements DocumentListener
-	{
-
-		@Override
-		public void changedUpdate(DocumentEvent arg0) 
-		{
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void insertUpdate(DocumentEvent arg0)
-		{
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void removeUpdate(DocumentEvent arg0)
-		{
-			// TODO Auto-generated method stub
-			
-		}
-	}	
+	/**
+	 * All keybinding functions are to be added from here
+	 * Function to add KeyBindings
+	 */
 	
-	/********************************************************************************************************/
-	/********************************************************************************************************/
-	//All keybinding functions are to be added from here
-	//Function to add KeyBindings
 	public void AddKeyBindings(){
 		//add an InputMap and ActionMap on the JEditorPane
 		InputMap iMap= editorPane.getInputMap(JComponent.WHEN_FOCUSED);
@@ -301,7 +332,6 @@ public class FileTab
 				}
 			}
 		});
-
 	}
 	
 	
