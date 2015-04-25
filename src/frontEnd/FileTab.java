@@ -94,7 +94,6 @@ public class FileTab
 		
 		document = (AbstractDocument) editorPane.getDocument();
 		document.addUndoableEditListener(undoListener);
-		document.addDocumentListener(new customDocumentListener());
 		this.setTab();	
 		//set tree
 		tree= t;

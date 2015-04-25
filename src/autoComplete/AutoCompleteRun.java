@@ -217,7 +217,7 @@ public class AutoCompleteRun implements Runnable
 			aMap= editorPane.getActionMap();
 			
 			String binding= "autoComplete";
-			iMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, java.awt.event.InputEvent.CTRL_DOWN_MASK), binding);
+			iMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ALT, java.awt.event.InputEvent.CTRL_DOWN_MASK), binding);
 			aMap.put(binding, new AbstractAction()
 			{
 				@Override
@@ -250,9 +250,7 @@ public class AutoCompleteRun implements Runnable
 				{
 					frameTemp.dispose();
 				}
-				
 			});		
-			
 		}
 		
 		@Override
