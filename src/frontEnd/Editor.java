@@ -379,7 +379,4 @@ public class Editor {
 		menuBar.add(menu);
 	}
 
-	public static void main(String[] args) throws IOException {
-		Editor edt = new Editor();
-	}
 }
