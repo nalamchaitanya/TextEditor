@@ -103,6 +103,15 @@ public class BKNode implements Serializable{
 					temp= editTable[l-1][m-1];
 				}
 				editTable[l][m]= min(editTable[l-1][m] +1, editTable[l][m-1] +1, temp);
+				
+				//adding transpose
+				if(l >1 && m >1)
+				{
+					if(str1.charAt(l-1)==str2.charAt(m-2) && str1.charAt(l-2)==str2.charAt(m-1))
+					{
+						editTable[l][m] = (editTable[l][m]<editTable[l-2][m-2]+1)?editTable[l][m]:editTable[l-2][m-2]+1;
+					}
+				}
 			}
 		}
 		//after filling the editTable, return the last element

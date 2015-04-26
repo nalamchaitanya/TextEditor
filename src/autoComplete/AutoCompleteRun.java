@@ -1,5 +1,6 @@
 package autoComplete;
 
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,10 +13,8 @@ import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -84,6 +83,7 @@ public class AutoCompleteRun implements Runnable
 					
 					frameTemp = new JFrame();
 					frameTemp.add(suggest);
+					frameTemp.setMinimumSize(new Dimension(150,20));
 					if(p!=null)
 						frameTemp.setBounds(p.x+10,p.y+130,200,20);
 					else

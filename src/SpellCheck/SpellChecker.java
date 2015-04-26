@@ -70,8 +70,12 @@ public class SpellChecker{
 						
 							LinkedList<String> l= null;
 							//check in tree
-							if(tree.BKTreeHasWord(currStr.trim()) == false){
-								l= tree.searchBKTree(currStr.trim(), 2);
+							String tempStr= currStr.trim();
+							if(tree.BKTreeHasWord(tempStr) == false){
+								if(tempStr.length() <= 6)
+									l= tree.searchBKTree(tempStr, 1);
+								else
+									l= tree.searchBKTree(tempStr, 2);
 							}
 							if(l != null && l.size() >= 1){
 								l.set(0, "");
@@ -89,8 +93,8 @@ public class SpellChecker{
 								JOptionPane pane= new JOptionPane(box, JOptionPane.INFORMATION_MESSAGE, JOptionPane.CANCEL_OPTION);
 								JDialog dialog= pane.createDialog("Select");
 								if(point != null){
-									point.x= point.x +30;
-									point.y += 155;
+									point.x= point.x +18;
+									point.y += 123;
 									dialog.setLocation(point);
 								}
 								//dialog.setSize(new Dimension(200, 100));

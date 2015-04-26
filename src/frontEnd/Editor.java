@@ -48,7 +48,7 @@ public class Editor {
 		this.prepareEditor();
 		//this.showEditor();
 
-		//initializing a tree
+		/*//initializing a tree
 		tree= new BKTree("start");
 		// add the whole text big.txt
 		BufferedReader in = new BufferedReader(new FileReader("Big.txt"));
@@ -56,7 +56,7 @@ public class Editor {
 		String str;
 		while ((str = in.readLine()) != null) {
 			tree.addToBKTree(str);
-		}
+		}*/
 
 	}
 
@@ -64,22 +64,32 @@ public class Editor {
 	 * @throws IOException ******************************************************************************************************/
 	private void prepareEditor() throws IOException {
 	
-		//initialize the tree
-	  	tree = new BKTree("start");
-	    // add the whole text big.txt
- 		BufferedReader in;
- 		try {
- 			in = new BufferedReader(new FileReader("Big.txt"));
- 			String str;
- 			while ((str = in.readLine()) != null) {
- 				tree.addToBKTree(str);
- 			}
- 		}
- 		catch (FileNotFoundException e) {
- 			// TODO Auto-generated catch block
- 			e.printStackTrace();
- 		}
- 		
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run() 
+			{
+				//initialize the tree
+			  	tree = new BKTree("start");
+			    // add the whole text big.txt
+		 		BufferedReader in;
+		 		try {
+		 			in = new BufferedReader(new FileReader("Big.txt"));
+		 			String str;
+		 			while ((str = in.readLine()) != null) {
+		 				tree.addToBKTree(str);
+		 			}
+		 		}
+		 		catch (IOException e)
+		 		{
+		 			// TODO Auto-generated catch block
+		 			e.printStackTrace();
+		 		}
+		 		
+			}
+			
+		}).start();
+		
 		// Initialization of main Frame.
 		mainFrame = new JFrame("TextEditor");
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
