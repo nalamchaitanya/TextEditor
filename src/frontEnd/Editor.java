@@ -19,9 +19,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
@@ -35,7 +37,8 @@ public class Editor {
 	public JMenuBar menuBar;
 	public JTabbedPane tabbedPane;
 	public ArrayList<FileTab> fileTabsList;
-
+	public JPanel status;
+	
 	//BKTree
 	BKTree tree;
 	
@@ -60,50 +63,57 @@ public class Editor {
 	/**
 	 * @throws IOException ******************************************************************************************************/
 	private void prepareEditor() throws IOException {
+	
 		//initialize the tree
-		tree = new BKTree("start");
-
-		// add the whole text big.txt
-		BufferedReader in;
-		try {
-			in = new BufferedReader(new FileReader("Big.txt"));
-			String str;
-			while ((str = in.readLine()) != null) {
-				tree.addToBKTree(str);
-			}
-		}
-		catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+	  	tree = new BKTree("start");
+	    // add the whole text big.txt
+ 		BufferedReader in;
+ 		try {
+ 			in = new BufferedReader(new FileReader("Big.txt"));
+ 			String str;
+ 			while ((str = in.readLine()) != null) {
+ 				tree.addToBKTree(str);
+ 			}
+ 		}
+ 		catch (FileNotFoundException e) {
+ 			// TODO Auto-generated catch block
+ 			e.printStackTrace();
+ 		}
+ 		
 		// Initialization of main Frame.
 		mainFrame = new JFrame("TextEditor");
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		mainFrame.setMinimumSize(new Dimension(1200, 600));
+		mainFrame.setResizable(false);
+		mainFrame.setMinimumSize(new Dimension(1366, 710));
 		mainFrame.setLayout(null);
 
 		//Tabbed Pane
 		tabbedPane = new JTabbedPane();
-		tabbedPane.setBounds(10, 60, 1160, 500);
+		tabbedPane.setBounds(10, 60, 1326, 610);
 	    mainFrame.add(tabbedPane);
 
 		//MenuBar
 		this.createMenu();
-		menuBar.setBounds(0, 0, 1200, 20);
+		menuBar.setBounds(0, 0, 1326, 20);
 		mainFrame.add(menuBar);
 	   
 	    //creating a panel for cut, copy, paste
 	    editBar= new JToolBar();
-		editBar.setBounds(0, 25, 1200, 30);
+		editBar.setBounds(0, 25, 1326, 30);
 	    //add edit bar to frame
 		mainFrame.add(editBar);
 	    //add buttons to the ToolBar
 	    CreateEditBar();
 	
+	    //adding  status bar to the mainFrame
+	    status= new JPanel();
+	    status.setBounds(10, 690, 1326, 30);
+	    //status.add(new JLabel("Status"));
+	    mainFrame.add(status);
+	    
 	    mainFrame.pack();
 	    mainFrame.setVisible(true);
-	    
+	  
 	}
 	
 	/********************************************************************************************************/
@@ -123,10 +133,10 @@ public class Editor {
 		//paste.setPreferredSize(new Dimension(25, 25));
 		
 		//adding Undo, Redo, Find, Find&Replace Buttons
-		JButton undo=makeButton("Undo.png", "Undo Previous Action", "Undo");
-		JButton redo=makeButton("Redo.png", "Redo Action", "Redo");
-		JButton find=makeButton("Find.png", "Find A String", "Find");
-		JButton findAndReplace=makeButton("FindAndReplace.png", "Find and Replace", "FindAndReplace");
+		JButton undo=makeButton("Undo.jpg", "Undo Previous Action", "Undo");
+		JButton redo=makeButton("Redo.jpg", "Redo Action", "Redo");
+		JButton find=makeButton("Find.jpg", "Find A String", "Find");
+		JButton findAndReplace=makeButton("FindAndReplace.jpg", "Find and Replace", "FindAndReplace");
 		JButton bold=makeButton("Bold.png", "Make Bold", "Bold");
 		JButton italic=makeButton("Italic.png", "Make Italic", "Italic");
 		JButton underLine=makeButton("Underline.png", "Make Underline", "Underline");

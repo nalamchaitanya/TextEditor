@@ -140,7 +140,8 @@ public class AutoCompleteRun implements Runnable
 				}
 				else if(ch == 8)
 				{
-					str = str.substring(0,str.length()-1);
+					if(str.length() >= 1)
+						str = str.substring(0,str.length()-1);
 					if(node!=null)
 						node = node.parent;
 					System.out.println("******************* "+str+" ********************");
