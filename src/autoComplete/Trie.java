@@ -45,4 +45,33 @@ public class Trie
 		if(alreadyExists == true)
 			parnt.freq++;
 	}
+	
+	public void removeString(String str)
+	{
+		int len = str.length();
+		Node node = this.root;
+		int i = 0;
+		while(!(node.isTerminal())&&i<len)
+		{
+			node = node.arr[str.charAt(i)-'a'];
+			i++;
+		}
+		if(node.isTerminal()==false)
+			node.endOfWord = false;
+		else if(i<len)
+			;
+		else
+		{
+			char temp = node.ch;
+			while(temp!='@')
+			{
+				if(node.endOfWord == true)
+					break;
+				node = node.parent;
+				node.arr[temp-'a'] = null;
+				temp = node.ch;
+			}
+		}
+	}
+	
 }

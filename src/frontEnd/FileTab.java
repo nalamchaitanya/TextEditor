@@ -105,7 +105,7 @@ public class FileTab
 		this.setTab();
 
 		try {
-			autoComplete = new AutoCompleteRun(editorPane);
+			autoComplete = new AutoCompleteRun(editorPane,tree);
 		} catch (BadLocationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -149,7 +149,7 @@ public class FileTab
 		tree= t;
 		
 		try {
-			autoComplete = new AutoCompleteRun(editorPane);
+			autoComplete = new AutoCompleteRun(editorPane,tree);
 		} catch (BadLocationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

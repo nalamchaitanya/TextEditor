@@ -136,7 +136,7 @@ public class SpellChecker{
 				}
 			}
 		}*/
-		if(currStr != null && repString != null){
+		if(currStr != null && repString != null && repString != ""){
 			boolean flag= false;
 			
 			int num=editorPane.getCaretPosition();

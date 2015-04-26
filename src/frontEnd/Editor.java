@@ -123,10 +123,10 @@ public class Editor {
 		//paste.setPreferredSize(new Dimension(25, 25));
 		
 		//adding Undo, Redo, Find, Find&Replace Buttons
-		JButton undo=makeButton("Undo.png", "Undo Previous Action", "Undo");
-		JButton redo=makeButton("Redo.png", "Redo Action", "Redo");
-		JButton find=makeButton("Find.png", "Find A String", "Find");
-		JButton findAndReplace=makeButton("FindAndReplace.png", "Find and Replace", "FindAndReplace");
+		JButton undo=makeButton("Undo.jpg", "Undo Previous Action", "Undo");
+		JButton redo=makeButton("Redo.jpg", "Redo Action", "Redo");
+		JButton find=makeButton("Find.jpg", "Find A String", "Find");
+		JButton findAndReplace=makeButton("FindAndReplace.jpg", "Find and Replace", "FindAndReplace");
 		JButton bold=makeButton("Bold.png", "Make Bold", "Bold");
 		JButton italic=makeButton("Italic.png", "Make Italic", "Italic");
 		JButton underLine=makeButton("Underline.png", "Make Underline", "Underline");
@@ -139,13 +139,13 @@ public class Editor {
 		editBar.add(cut);
 		editBar.add(copy);
 		editBar.add(paste);
+		editBar.add(bold);
+		editBar.add(italic);
+		editBar.add(underLine);
 		editBar.add(undo);
 		editBar.add(redo);
 		editBar.add(find);
 		editBar.add(findAndReplace);
-		editBar.add(bold);
-		editBar.add(italic);
-		editBar.add(underLine);
 		
 		String fonts[] = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
 		
@@ -157,10 +157,8 @@ public class Editor {
 			size.addItem(i);
 		size.addActionListener(new CommonEditBarActionListener(tabbedPane, fileTabsList,"Size", tree));
 		font.addActionListener(new CommonEditBarActionListener(tabbedPane, fileTabsList,"Font", tree));
-		editBar.add(size);
 		editBar.add(font);
-		font.setBounds(175, 25, 150, 30);
-		
+		editBar.add(size);
 	}
 	//make the button
 	public JButton makeButton(String imagePath, String toolTipText, String action)

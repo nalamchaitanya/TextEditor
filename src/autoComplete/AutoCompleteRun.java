@@ -21,6 +21,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 
+import SpellCheck.BKTree;
+
 public class AutoCompleteRun implements Runnable
 {
 	Trie trie;
@@ -30,14 +32,15 @@ public class AutoCompleteRun implements Runnable
 	Node node;
 	JFrame frameTemp;
 	KeyListener keyListen;
+	BKTree tree;
 	
-	public AutoCompleteRun(JEditorPane editorPane) throws BadLocationException
+	public AutoCompleteRun(JEditorPane editorPane,BKTree t) throws BadLocationException
 	{
 		list = new ArrayList<String>();
 		trie  = new Trie();
 		this.editorPane = editorPane;
 		str = editorPane.getText();
-		
+		this.tree = t;
 		//editorPane.getDocument().addDocumentListener(new customDocumentListener());
 		editorPane.addKeyListener(new customKeyListener());
 		//editorPane.addCaretListener(new customCaretListener());
@@ -53,12 +56,13 @@ public class AutoCompleteRun implements Runnable
 		String beforeStr;
 		InputMap  iMap;
 		ActionMap aMap;
+		boolean spellMistake;
 		
 		public customKeyListener()
 		{
 			str = "";
 			beforeIndex = 0;
-			
+			spellMistake = false;
 			iMap= editorPane.getInputMap(JComponent.WHEN_FOCUSED);
 			aMap= editorPane.getActionMap();
 			
@@ -120,6 +124,30 @@ public class AutoCompleteRun implements Runnable
 			char ch = e.getKeyChar();
 			if((e.getModifiers()& ActionEvent.CTRL_MASK)==ActionEvent.CTRL_MASK)
 				ctrl = true;
+			if(spellMistake == true)
+			{
+				String mis = editorPane.getText();
+				int length = mis.length();
+				if(mis.charAt(length-1)=='\n')
+					mis = mis.substring(0, length-1);
+				length--;
+				int space = mis.substring(0,length-1).lastIndexOf(' ');
+				try {
+					String temp = editorPane.getText(space+1, length-1- space);
+					System.out.println(space);
+					System.out.println(length);
+					System.out.println(temp);
+					System.out.println(temp);
+					temp = cleanString(temp);
+					System.out.println(temp);
+					trie.addString(temp);
+					str = "";
+				} catch (BadLocationException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				spellMistake = false;
+			}
 			if(ctrl == false)
 			{	
 				if('A'<=ch&&ch<='Z')
@@ -140,7 +168,8 @@ public class AutoCompleteRun implements Runnable
 				}
 				else if(ch == 8)
 				{
-					str = str.substring(0,str.length()-1);
+					if(str.length()>0)
+						str = str.substring(0,str.length()-1);
 					if(node!=null)
 						node = node.parent;
 					System.out.println("******************* "+str+" ********************");
@@ -155,8 +184,14 @@ public class AutoCompleteRun implements Runnable
 				else
 				{
 					str = cleanString(str);
-					trie.addString(str);
-					str = "";
+					spellMistake = true;
+					if(tree.BKTreeHasWord(str)||str.equals(""))
+					{
+						if(!str.equals(""))
+							trie.addString(str);
+						spellMistake = false;
+						str = "";
+					}
 					node = trie.root;
 					list = node.giveStrings();
 					//node.printList();
@@ -322,7 +357,7 @@ public class AutoCompleteRun implements Runnable
 	public String cleanString(String str1)
 	{
 		String string = str1.toLowerCase();
-		int len = string.length();
+		/*int len = string.length();
 		if(len == 0)
 			return "";
 		if(str1.charAt(len-1)=='\n')
@@ -336,7 +371,7 @@ public class AutoCompleteRun implements Runnable
 		if(!(('a'<=ch)&&(ch<='z')))
 		{
 			string = string.substring(0,len-1);
-		}
-		return string;
+		}*/
+		return string.trim();
 	}
 }

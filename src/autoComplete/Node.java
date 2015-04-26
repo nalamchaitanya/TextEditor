@@ -60,5 +60,15 @@ public class Node
 		int len = list.size();
 		for(int i =0;i<len;i++)
 			System.out.println(list.get(i));
-	}	
+	}
+	
+	public boolean isTerminal()
+	{
+		for(int i =0;i<26;i++)
+		{
+			if(this.arr[i]!=null)
+				return false;
+		}
+		return true;
+	}
 }
