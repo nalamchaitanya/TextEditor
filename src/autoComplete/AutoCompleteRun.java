@@ -168,7 +168,7 @@ public class AutoCompleteRun implements Runnable
 				}
 				else if(ch == 8)
 				{
-					if(str.length()>0)
+					if(str.length() >= 1)
 						str = str.substring(0,str.length()-1);
 					if(node!=null)
 						node = node.parent;
@@ -357,21 +357,24 @@ public class AutoCompleteRun implements Runnable
 	public String cleanString(String str1)
 	{
 		String string = str1.toLowerCase();
-		/*int len = string.length();
+		string = string.trim();
+		int len = string.length();
 		if(len == 0)
 			return "";
-		if(str1.charAt(len-1)=='\n')
-			return cleanString(str1.substring(0, len-1));
 		char ch = string.charAt(0);
 		if(!(('a'<=ch)&&(ch<='z')))
 		{
 			string = string.substring(1);
 		}
-		ch = string.charAt(len-1);
-		if(!(('a'<=ch)&&(ch<='z')))
-		{
-			string = string.substring(0,len-1);
-		}*/
-		return string.trim();
+		len = string.length();
+		if(len!=0)
+		{	
+			ch = string.charAt(len-1);
+			if(!(('a'<=ch)&&(ch<='z')))
+			{
+				string = string.substring(0,len-1);
+			}
+		}
+		return string;
 	}
 }

@@ -3,6 +3,7 @@ package SpellCheck;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
@@ -23,6 +24,8 @@ public class SpellChecker{
 	//We also need the editor pane
 	JEditorPane editorPane;
 	String currStr;
+	//mask
+	boolean mask;
 	
 	//constructor
 	public SpellChecker(JEditorPane editorP, BKTree t) throws IOException{
@@ -31,76 +34,89 @@ public class SpellChecker{
 		currStr="";
 		this.tree= t;
 		
+		mask = false;
+		
 		keyListen= new KeyListener() {
 			
 			@Override
 			public void keyTyped(KeyEvent e) {
-				//when a key is typed
-				//check if the key pressed is backspace or delete
-				int temp= (int)e.getKeyChar();
-				//add the character to the string
-				if(temp <= 122 && temp >= 65){
-					currStr=currStr.concat(Character.toString((char)temp).toLowerCase());	
+				
+				//put mask as true if control was pressed
+				if(e.getKeyCode() == 17){
+					mask = true;
 				}
 				
-				if(temp == 8){
-					//a key has been deleted
-					if(currStr.length() >=1){
-						//remove the last element from the string
-						currStr= currStr.substring(0, currStr.length()-1);
+				if(mask == false){
+					//when a key is typed
+					//check if the key pressed is backspace or delete
+					int temp= (int)e.getKeyChar();
+					//add the character to the string
+					if(temp <= 122 && temp >= 65){
+						currStr=currStr.concat(Character.toString((char)temp).toLowerCase());	
 					}
-				}
-				
-				//if a space has been pressed, generate the list of words that matchit if wrong
-				if(temp == 32 || temp == 9 || temp ==10){
-					//check if string is not all whitespace
-					if(currStr.trim().length() >=1){
-						LinkedList<String> l= null;
-						//check in tree
-						if(tree.BKTreeHasWord(currStr.trim()) == false){
-							l= tree.searchBKTree(currStr.trim(), 2);
+					
+					if(temp == 8){
+						//a key has been deleted
+						if(currStr.length() >=1){
+							//remove the last element from the string
+							currStr= currStr.substring(0, currStr.length()-1);
 						}
-						if(l != null && l.size() >= 1){
-							l.set(0, "");
-							
-							//add the list to a pop up
-							Point point=editorPane.getCaret().getMagicCaretPosition();
-							JComboBox<String> box= new JComboBox<String>();
-							for(int i=0; i<l.size(); i++){
-								box.addItem(l.get(i));
+					}
+					
+					//if a space has been pressed, generate the list of words that matchit if wrong
+					if(temp == 32 || temp == 9 || temp ==10){
+						//check if string is not all whitespace
+						if(currStr.trim().length() >=1){
+						
+							LinkedList<String> l= null;
+							//check in tree
+							if(tree.BKTreeHasWord(currStr.trim()) == false){
+								l= tree.searchBKTree(currStr.trim(), 2);
 							}
-							//add actionlistener
-							//add a customised actionlistener
-							//box.addActionListener();
-							//add the JComboBox to editorPane
-							JOptionPane pane= new JOptionPane(box, JOptionPane.INFORMATION_MESSAGE, JOptionPane.CANCEL_OPTION);
-							JDialog dialog= pane.createDialog("Select");
-							point.x= point.x +30;
-							point.y += 155;
-							dialog.setLocation(point);
-							//dialog.setSize(new Dimension(200, 100));
-							dialog.setVisible(true);
-							//JDialog dialog=
-							//get the selected item
-							String repString= (String)box.getSelectedItem();
-							//replace the curString with repString
-							replaceSpelling(currStr, repString);
+							if(l != null && l.size() >= 1){
+								l.set(0, "");
+								
+								//add the list to a pop up
+								Point point=editorPane.getCaret().getMagicCaretPosition();
+								JComboBox<String> box= new JComboBox<String>();
+								for(int i=0; i<l.size(); i++){
+									box.addItem(l.get(i));
+								}
+								//add actionlistener
+								//add a customised actionlistener
+								//box.addActionListener();
+								//add the JComboBox to editorPane
+								JOptionPane pane= new JOptionPane(box, JOptionPane.INFORMATION_MESSAGE, JOptionPane.CANCEL_OPTION);
+								JDialog dialog= pane.createDialog("Select");
+								if(point != null){
+									point.x= point.x +30;
+									point.y += 155;
+									dialog.setLocation(point);
+								}
+								//dialog.setSize(new Dimension(200, 100));
+								dialog.setVisible(true);
+								//JDialog dialog=
+								//get the selected item
+								String repString= (String)box.getSelectedItem();
+								//replace the curString with repString
+								
+								replaceSpelling(currStr, repString);						
+							}
 						}
+						currStr="";
 					}
-					currStr="";
 				}
 			}			
 		
 			@Override
 			public void keyReleased(KeyEvent e) {
-				// TODO Auto-generated method stub
-				
+				if(e.getKeyCode() == 17){
+					mask = false;
+				}
 			}
 			
 			@Override
 			public void keyPressed(KeyEvent arg0) {
-				// TODO Auto-generated method stub
-				
 			}
 		};
 		
